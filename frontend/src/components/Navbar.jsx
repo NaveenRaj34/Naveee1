@@ -21,7 +21,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to={isAuthenticated ? "/analyze" : "/login"} className="flex items-center gap-2.5 group">
+          {/* Logo */}
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
               <Shield className="w-6 h-6 text-white" />
             </div>
@@ -86,13 +87,34 @@ const Navbar = () => {
           ) : (
             <div className="hidden md:flex items-center gap-6">
               <Link
-                to="/about"
+                to="/"
                 className={`text-sm font-medium transition-colors ${
-                  isActive('/about') ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-white'
+                  isActive('/') ? 'text-cyan-400 font-semibold' : 'text-slate-300 hover:text-white'
                 }`}
               >
-                About Platform
+                Home
               </Link>
+              <Link
+                to="/analyze"
+                className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  isActive('/analyze') ? 'text-cyan-400 font-semibold' : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <ShieldAlert className="w-4 h-4 text-cyan-400" />
+                Analyze Job
+              </Link>
+              <a
+                href="/#features"
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              >
+                Features
+              </a>
+              <a
+                href="/#how-it-works"
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              >
+                How It Works
+              </a>
             </div>
           )}
 
@@ -214,12 +236,33 @@ const Navbar = () => {
           ) : (
             <div className="pt-2 space-y-2">
               <Link
-                to="/about"
+                to="/"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-3 py-2 text-base font-medium text-slate-200 hover:bg-slate-800 rounded-md"
               >
-                About Platform
+                Home
               </Link>
+              <Link
+                to="/analyze"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-base font-medium text-cyan-400 hover:bg-slate-800 rounded-md font-semibold"
+              >
+                Analyze Job
+              </Link>
+              <a
+                href="/#features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-base font-medium text-slate-200 hover:bg-slate-800 rounded-md"
+              >
+                Features
+              </a>
+              <a
+                href="/#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-base font-medium text-slate-200 hover:bg-slate-800 rounded-md"
+              >
+                How It Works
+              </a>
               <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
                 <Link
                   to="/login"

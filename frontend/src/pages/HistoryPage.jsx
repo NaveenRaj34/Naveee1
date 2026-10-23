@@ -20,6 +20,8 @@ const TABS = [
 const HistoryPage = () => {
   const [analyses, setAnalyses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [feedback, setFeedback] = useState({ text: '', type: '' });
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [page, setPage] = useState(1);
@@ -68,13 +70,16 @@ const HistoryPage = () => {
     if (!window.confirm('Are you sure you want to delete this analysis record?')) return;
     try {
       await analysisAPI.deleteAnalysis(id);
+      setFeedback({ text: 'Record deleted successfully.', type: 'success' });
       fetchHistory();
     } catch (err) {
-      alert('Failed to delete analysis record.');
+      setFeedback({ text: 'Failed to delete analysis record.', type: 'error' });
     }
   };
 
   const handleDownloadPDF = async (id) => {
+    setDownloadingId(id);
+    setFeedback({ text: '', type: '' });
     try {
       const res = await reportsAPI.download(id);
       const blob = new Blob([res.data], { type: 'application/pdf' });
@@ -85,8 +90,11 @@ const HistoryPage = () => {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      setFeedback({ text: `Report #${id} downloaded successfully.`, type: 'success' });
     } catch (err) {
-      alert('Could not download PDF report.');
+      setFeedback({ text: `Could not download PDF report for #${id}.`, type: 'error' });
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -114,6 +122,21 @@ const HistoryPage = () => {
             <PlusCircle className="w-4 h-4" /> Analyze New Job
           </Link>
         </div>
+
+        {feedback.text && (
+          <div className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 ${
+            feedback.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-red-500/10 border-red-500/30 text-red-300'
+          }`}>
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            )}
+            <span>{feedback.text}</span>
+          </div>
+        )}
 
         {/* Search & Tabs Toolbar */}
         <div className="space-y-4">
@@ -235,10 +258,15 @@ const HistoryPage = () => {
                             </Link>
                             <button
                               onClick={() => handleDownloadPDF(job.id)}
-                              className="p-1.5 bg-slate-800 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 rounded border border-slate-700 transition-colors"
+                              disabled={downloadingId === job.id}
+                              className="p-1.5 bg-slate-800 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 rounded border border-slate-700 transition-colors disabled:opacity-50"
                               title="Download PDF"
                             >
-                              <Download className="w-3.5 h-3.5" />
+                              {downloadingId === job.id ? (
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                              ) : (
+                                <Download className="w-3.5 h-3.5" />
+                              )}
                             </button>
                             <button
                               onClick={() => handleDelete(job.id)}

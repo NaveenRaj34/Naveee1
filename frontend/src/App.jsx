@@ -36,10 +36,10 @@ function App() {
       <Router>
         <Routes>
           {/* Public Authentication & Info Routes */}
-          <Route path="/" element={<RootRoute />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/about" element={<LandingPage />} />
 
           {/* Authenticated Protected Routes */}
           <Route

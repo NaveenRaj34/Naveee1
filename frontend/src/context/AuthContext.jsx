@@ -83,6 +83,10 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    updateUser: (newUserData) => {
+      setUser(newUserData);
+      localStorage.setItem('jobshield_user', JSON.stringify(newUserData));
+    },
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

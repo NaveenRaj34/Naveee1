@@ -119,3 +119,7 @@ desktop.ini
 *.bak
 *.tmp
 *.temp
+
+# Production secrets and settings backups
+backend/.env.production
+backend/config/settings.py.backup*

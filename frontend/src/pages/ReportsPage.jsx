@@ -7,6 +7,8 @@ import Navbar from '../components/Navbar';
 const ReportsPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [feedback, setFeedback] = useState({ text: '', type: '' });
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -25,6 +27,8 @@ const ReportsPage = () => {
   }, []);
 
   const handleDownloadPDF = async (id, title) => {
+    setDownloadingId(id);
+    setFeedback({ text: '', type: '' });
     try {
       const res = await reportsAPI.download(id);
       const blob = new Blob([res.data], { type: 'application/pdf' });
@@ -35,8 +39,12 @@ const ReportsPage = () => {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      setFeedback({ text: `Report #${id} downloaded successfully.`, type: 'success' });
     } catch (err) {
-      alert('Could not download PDF report.');
+      console.error('Download error:', err);
+      setFeedback({ text: `Could not download PDF report for #${id}.`, type: 'error' });
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -54,6 +62,21 @@ const ReportsPage = () => {
             Download formal, executive-ready PDF cybersecurity risk assessments for any analyzed job posting.
           </p>
         </div>
+
+        {feedback.text && (
+          <div className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 ${
+            feedback.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-red-500/10 border-red-500/30 text-red-300'
+          }`}>
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            )}
+            <span>{feedback.text}</span>
+          </div>
+        )}
 
         {loading ? (
           <div className="p-16 text-center text-slate-400">
@@ -108,9 +131,18 @@ const ReportsPage = () => {
                   <div className="pt-3 border-t border-slate-800/80 flex items-center gap-2">
                     <button
                       onClick={() => handleDownloadPDF(item.id, item.job_title)}
-                      className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition-all"
+                      disabled={downloadingId === item.id}
+                      className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition-all disabled:opacity-50"
                     >
-                      <Download className="w-3.5 h-3.5" /> Download PDF
+                      {downloadingId === item.id ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-3.5 h-3.5" /> Download PDF
+                        </>
+                      )}
                     </button>
                     <Link
                       to={`/analysis/${item.id}`}

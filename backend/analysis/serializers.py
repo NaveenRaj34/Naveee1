@@ -9,9 +9,20 @@ from .models import (
 )
 
 class MLResultSerializer(serializers.ModelSerializer):
+    is_fallback = serializers.SerializerMethodField()
+    model_status = serializers.SerializerMethodField()
+
     class Meta:
         model = MLResult
-        fields = ['id', 'prediction', 'confidence', 'model_version', 'model_name', 'created_at']
+        fields = ['id', 'prediction', 'confidence', 'model_version', 'model_name', 'is_fallback', 'model_status', 'created_at']
+
+    def get_is_fallback(self, obj):
+        return 'fallback' in (obj.model_name or '').lower()
+
+    def get_model_status(self, obj):
+        if 'fallback' in (obj.model_name or '').lower():
+            return 'Development Fallback Heuristic'
+        return 'Production ML Model (Random Forest)'
 
 class RiskAnalysisSerializer(serializers.ModelSerializer):
     class Meta:

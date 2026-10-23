@@ -182,6 +182,19 @@ const AnalysisResultPage = () => {
                 <div className="text-xs text-slate-400 font-mono">
                   MODEL CONFIDENCE: <span className="text-white font-bold">{data.confidence}%</span>
                 </div>
+
+                <div className="text-[11px] font-mono px-2.5 py-1 rounded-md border flex items-center gap-1.5 font-semibold">
+                  {data.ml_result?.is_fallback ? (
+                    <span className="text-amber-400 border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded">
+                      HEURISTIC FALLBACK
+                    </span>
+                  ) : (
+                    <span className="text-cyan-400 border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 rounded flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-cyan-400" />
+                      LIVE ML MODEL PREDICTION
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Summary Sentence */}
@@ -261,6 +274,8 @@ const AnalysisResultPage = () => {
             confidence={data.confidence}
             modelName={data.ml_result?.model_name}
             version={data.ml_result?.model_version}
+            isFallback={data.ml_result?.is_fallback}
+            modelStatus={data.ml_result?.model_status}
           />
 
           <SalaryAnalysisCard

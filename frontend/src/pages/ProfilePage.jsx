@@ -5,7 +5,7 @@ import { authAPI } from '../services/api';
 import Navbar from '../components/Navbar';
 
 const ProfilePage = () => {
-  const { user, login } = useAuth();
+  const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -18,7 +18,7 @@ const ProfilePage = () => {
       const res = await authAPI.updateProfile({ name });
       if (res.data && res.data.success) {
         setMessage('Profile updated successfully.');
-        localStorage.setItem('jobshield_user', JSON.stringify(res.data.data));
+        updateUser(res.data.data);
       }
     } catch (err) {
       setMessage('Failed to update profile.');
